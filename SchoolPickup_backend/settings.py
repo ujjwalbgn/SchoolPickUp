@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-58+g@t6pn@olvx41cw^a%dd1j*h9f_mgf4_l@vn_ge!dwq1$r9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*'
 
 
 # Application definition
@@ -40,6 +40,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Simplified static file serving.
+    # https://warehouse.python.org/project/whitenoise/
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -106,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 
@@ -124,3 +128,10 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+STATIC_ROOT = BASE_DIR / 'staticfiles'  #. os.path.join(BASE_DIR, 'staticfiles')
