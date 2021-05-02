@@ -23,6 +23,6 @@ urlpatterns = [
     # REST-framework
 
 
-    path('api/accounts/', include('users.API.urls')),
+    path('api/accounts/', include('accounts.API.urls')),
 
 ]

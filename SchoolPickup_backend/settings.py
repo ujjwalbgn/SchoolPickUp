@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users.apps.UsersConfig',
+    'accounts.apps.UsersConfig',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -125,7 +125,7 @@ USE_TZ = True
 
 # Custom user model
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#a-full-example
-AUTH_USER_MODEL = 'users.SchoolUser'
+AUTH_USER_MODEL = 'accounts.SchoolUser'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
