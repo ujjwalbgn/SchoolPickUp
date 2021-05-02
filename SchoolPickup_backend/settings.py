@@ -36,9 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users.apps.UsersConfig',
-
+    'accounts.apps.UsersConfig',
+    'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # https://pypi.org/project/django-cors-headers/
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
 ]
 
 ROOT_URLCONF = 'SchoolPickup_backend.urls'
@@ -119,7 +125,7 @@ USE_TZ = True
 
 # Custom user model
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#a-full-example
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'accounts.SchoolUser'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -137,3 +143,25 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # . os.path.join(BASE_DIR, 'staticfiles')
+
+
+REST_FRAMEWORK = {
+    # https://www.django-rest-framework.org/api-guide/permissions/
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    # https://www.django-rest-framework.org/api-guide/authentication/
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+
+# TODO::Change CORS_ALLOW_ALL_ORIGINS = True to
+#  CORS_ALLOWED_ORIGINS = [
+#     "https://example.com",
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+

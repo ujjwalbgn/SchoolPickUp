@@ -5,17 +5,17 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from users.models import CustomUser
+from accounts.models import SchoolUser
 
 
 class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required
+    """A form for creating new accounts. Includes all the required
     fields, plus a repeated password."""
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
-        model = CustomUser
+        model = SchoolUser
         fields = ('email', 'first_name','last_name','date_of_birth')
 
     def clean_password2(self):
@@ -36,14 +36,14 @@ class UserCreationForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Includes all the fields on
+    """A form for updating accounts. Includes all the fields on
     the user, but replaces the password field with admin's
     disabled password hash display field.
     """
     password = ReadOnlyPasswordHashField()
 
     class Meta:
-        model = CustomUser
+        model = SchoolUser
         fields = ('email', 'password', 'first_name','last_name','date_of_birth', 'is_active', 'is_admin')
 
 
@@ -79,4 +79,4 @@ class UserAdmin(BaseUserAdmin):
 
 
 # Now register the new UserAdmin...
-admin.site.register(CustomUser, UserAdmin)
+admin.site.register(SchoolUser, UserAdmin)
