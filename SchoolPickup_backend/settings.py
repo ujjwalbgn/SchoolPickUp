@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'accounts.apps.UsersConfig',
+    'accounts.apps.AccountsConfig',
+    'school.apps.SchoolConfig',
+    
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
