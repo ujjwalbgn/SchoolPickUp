@@ -75,7 +75,7 @@ celerybeat-schedule.*
 *.sage.py
 
 # Environments
-SAPR/.env
+SchoolPickup_backend/.env
 .venv
 env/
 venv/
