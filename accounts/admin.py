@@ -44,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = SchoolUser
-        fields = ('email', 'password', 'first_name','last_name','date_of_birth', 'is_active', 'is_admin')
+        fields = ('email', 'password', 'first_name','last_name','date_of_birth', 'is_active', 'is_admin', 'is_staff')
 
 
 class UserAdmin(BaseUserAdmin):
@@ -61,7 +61,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name','last_name','date_of_birth',)}),
-        ('Permissions', {'fields': ('is_admin','is_active')}),
+        ('Permissions', {'fields': ('is_admin','is_active','is_staff')}),
         ('Important Dates', {'fields': ('last_login','created_at','updated_at')}),
     )
 

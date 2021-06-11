@@ -70,3 +70,21 @@ class StudentAndGuardian (models.Model):
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     Guardian = models.ForeignKey(Guardian, on_delete=models.PROTECT)
     relation = models.ForeignKey(Relation, on_delete=models.PROTECT)
+
+    def __str__(self):
+        display = ("Student Name: " + str(self.student) + " Guardian Name: " + str(self.Guardian))
+        return display
+
+class SchoolDetails (models.Model):
+    latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
+    longitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
+
+class GuardiansLocation (models.Model):
+    source_of_location = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
+    latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
+    longitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
+    timeStamp = models.DateTimeField(blank=True)
+
+    def __str__(self):
+        display = (str(self.source_of_location.get_username()) + "  " + str(self.timeStamp))
+        return display
