@@ -26,6 +26,7 @@ class SchoolUserManager(BaseUserManager):
             last_name=last_name,
         )
         user.set_password(password)
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -55,6 +56,7 @@ class SchoolUser(AbstractBaseUser):
     last_name = models.CharField(max_length=64)
     date_of_birth = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -77,11 +79,11 @@ class SchoolUser(AbstractBaseUser):
         # Simplest possible answer: Yes, always
         return True
 
-    @property
-    def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
+    # @property
+    # def is_staff(self):
+    #     "Is the user a member of staff?"
+    #     # Simplest possible answer: All admins are staff
+    #     return self.is_admin
 
 @receiver(post_save, sender = settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance = None, created=False, **kwargs):
