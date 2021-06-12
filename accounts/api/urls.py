@@ -1,19 +1,25 @@
 # This url.py is added to SchoolPickup_backend.urls.py
 
-from django.urls import path
-from rest_framework.authtoken.views import obtain_auth_token
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from accounts.api.views import(
     registration_view,
+    CustomAuthToken,
 )
 
-app_name = "accounts"
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+
+
+app_name = "accounts_api"
 
 urlpatterns = [
     # This will return a token when user login
-    path('login', obtain_auth_token, name='api-login'),
+    path('', include(router.urls)),
+    path('login', CustomAuthToken.as_view(), name='api-login'),
 
-    #  This will allow user registration using API requests
+    #  This will allow user registration using api requests
     # path('register', registration_view, name="api-register"),
 
 ]
