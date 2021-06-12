@@ -83,6 +83,7 @@ class SchoolDetails (models.Model):
     latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
     longitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
 
+
 class GuardiansLocation (models.Model):
     source_of_location = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
     latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
