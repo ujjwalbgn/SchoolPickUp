@@ -177,6 +177,7 @@ REST_FRAMEWORK = {
     # https://www.django-rest-framework.org/api-guide/authentication/
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ]
 }
 

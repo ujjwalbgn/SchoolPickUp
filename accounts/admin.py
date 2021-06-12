@@ -16,7 +16,9 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = SchoolUser
-        fields = ('email', 'first_name','last_name','date_of_birth')
+        # fields = ('email', 'first_name','last_name','date_of_birth')
+        fields = ('email',)
+
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -44,7 +46,8 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = SchoolUser
-        fields = ('email', 'password', 'first_name','last_name','date_of_birth', 'is_active', 'is_admin', 'is_staff')
+        # fields = ('email', 'password', 'first_name','last_name','date_of_birth', 'is_active', 'is_admin', 'is_staff')
+        fields = ('email', 'password', 'is_active', 'is_admin', 'is_staff') #  <--- with out Name and DOB
 
 
 class UserAdmin(BaseUserAdmin):
@@ -55,12 +58,18 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'first_name','last_name','date_of_birth', 'is_admin')
+
+    # list_display = ('email', 'first_name','last_name','date_of_birth', 'is_admin')
+
+    list_display = ('email', 'is_admin')
+
     list_filter = ('is_admin',)
     readonly_fields = ('created_at','updated_at','last_login')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name','last_name','date_of_birth',)}),
+
+        # ('Personal info', {'fields': ('first_name','last_name','date_of_birth',)}),
+
         ('Permissions', {'fields': ('is_admin','is_active','is_staff')}),
         ('Important Dates', {'fields': ('last_login','created_at','updated_at')}),
     )
@@ -70,7 +79,9 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email','first_name','last_name','date_of_birth', 'password1', 'password2'),
+            # 'fields': ('email', 'first_name', 'last_name', 'date_of_birth', 'password1', 'password2'),
+
+            'fields': ('email', 'password1', 'password2'), #  <--- with out Name and DOB
         }),
     )
     search_fields = ('email',)

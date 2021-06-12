@@ -14,7 +14,7 @@ router = DefaultRouter()
 
 app_name = "accounts_api"
 
-urlpatterns = [
+urlpatterns = (
     # This will return a token when user login
     path('', include(router.urls)),
     path('login', CustomAuthToken.as_view(), name='api-login'),
@@ -22,4 +22,4 @@ urlpatterns = [
     #  This will allow user registration using api requests
     # path('register', registration_view, name="api-register"),
 
-]
+)
