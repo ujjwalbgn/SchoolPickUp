@@ -28,8 +28,8 @@ def registration_view(request):
             account = serializer.save()
             data['response'] = 'successfully registered new user.'
             data['email'] = account.email
-            data['first_name'] = account.first_name
-            data['last_name'] = account.last_name
+            # data['first_name'] = account.first_name
+            # data['last_name'] = account.last_name
             data['pk'] = account.pk
             token = Token.objects.get(user=account).key
             data['token'] = token

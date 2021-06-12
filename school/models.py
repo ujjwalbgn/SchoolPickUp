@@ -19,7 +19,7 @@ class Student (models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     date_of_birth = models.DateField(null=True, blank=True)
-    student_id = models.CharField(max_length=10, unique=True, blank=True)
+    student_id = models.CharField(max_length=10, blank=True)
 
     address_1 = models.CharField( max_length=128, blank=True)
     address_2 = models.CharField(max_length=128, blank=True)
@@ -38,7 +38,11 @@ class Relation (models.Model):
         return self.relation
 
 class Guardian (models.Model):
-    user = models.OneToOneField(SchoolUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(SchoolUser, on_delete=models.CASCADE, blank=True, null=True)
+
+    first_name = models.CharField(max_length=64, default="")
+    last_name = models.CharField(max_length=64,  default="")
+    date_of_birth = models.DateField(null=True, blank=True)
 
     US_STATES = [('AL', 'Alababama'), ('AK', 'Alaska'), ('AZ', 'Arizona'), ('AR', 'Arkansas'), ('CA', 'California'),
                  ('CO', 'Colorado'), ('CT', 'Connecticut'), ('DE', 'Delaware'), ('DC', 'District of Columbia'),
@@ -61,7 +65,7 @@ class Guardian (models.Model):
     phone_number = models.CharField(max_length=128, blank=True)
 
     def __str__(self):
-        display = (self.user.first_name + " " + self.user.last_name)
+        display = (self.first_name + " " + self.last_name)
         return display
 
 
