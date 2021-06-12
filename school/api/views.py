@@ -16,6 +16,16 @@ from school.models import *
 from school.api.serializers import *
 # Create your views here.
 
-class GuardianDetails(viewsets.ReadOnlyModelViewSet):
+# @api_view(['GET'])
+# def api_root(request, format=None):
+    # return Response({
+    #     'guardian': reverse('guardian-list', request=request, format=format),
+    # })
+
+
+# TODO make it available only for staff
+class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Guardian.objects.all()
-    serializer_class = GuardianDetailsSerializers
+    serializer_class = GuardianSerializers
+
+# class
