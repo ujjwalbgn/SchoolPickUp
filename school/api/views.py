@@ -8,9 +8,11 @@ from rest_framework import permissions
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.views import APIView
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from school.models import *
 from school.api.serializers import *
@@ -25,7 +27,14 @@ from school.api.serializers import *
 
 # TODO make it available only for staff
 class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
+    #
     queryset = Guardian.objects.all()
     serializer_class = GuardianSerializers
 
-# class
+class SchoolDetailsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SchoolDetails.objects.all()
+    serializer_class = SchoolDetailsSerializers
+
+class GuardiansLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = GuardianLocationSerializers
+    queryset = GuardiansLocation.objects.all()

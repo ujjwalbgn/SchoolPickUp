@@ -14,4 +14,14 @@ class GuardianSerializers(serializers.HyperlinkedModelSerializer):
         model = Guardian
         fields = ['url','user_email', 'first_name', 'last_name', 'phone_number']
 
-#
+
+class SchoolDetailsSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolDetails
+        fields = ['latitude','longitude','geofencing_radius']
+
+
+class GuardianLocationSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = GuardiansLocation
+        fields = '__all__'
