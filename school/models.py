@@ -80,15 +80,16 @@ class StudentAndGuardian (models.Model):
         return display
 
 class SchoolDetails (models.Model):
-    latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
-    longitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
+    latitude = models.DecimalField(null=False, max_digits= 25, decimal_places = 10)
+    longitude = models.DecimalField(null=False, max_digits= 25, decimal_places = 10)
+    geofencing_radius = models.DecimalField(null=False, max_digits= 20, decimal_places = 5, default=0)
 
 
 class GuardiansLocation (models.Model):
     source_of_location = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
-    latitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
-    longitude = models.DecimalField(blank=True, max_digits= 25, decimal_places = 20)
-    timeStamp = models.DateTimeField(blank=True)
+    latitude = models.DecimalField(null=False, max_digits= 25, decimal_places = 20)
+    longitude = models.DecimalField(null=False, max_digits= 25, decimal_places = 20)
+    timeStamp = models.DateTimeField(null=False)
 
     def __str__(self):
         display = (str(self.source_of_location.get_username()) + "  " + str(self.timeStamp))
