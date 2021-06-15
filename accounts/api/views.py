@@ -2,11 +2,12 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-
+from rest_framework.views import APIView
 
 from accounts.models import SchoolUser
-from accounts.api.serializers import RegistrationSerializer
+from accounts.api.serializers import RegistrationSerializer, UserSerializer
 
+from school.models import Guardian
 
 # Register
 # Url: https://<your-domain>/api/account/register
@@ -60,7 +61,19 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
-            'user_id': int(user.pk),
-            'email': user.email,
+            # 'user_id': int(user.pk),
+            # 'email': user.email,
             'is_staff': user.is_staff,
         })
+
+@api_view(['GET'])
+def current_user(request):
+    user = request.user
+    guardian = Guardian.objects.get(user= user)
+
+    return Response({
+        'user_id': user.id,
+        'first_name': guardian.first_name,
+        'last_name': guardian.last_name,
+        'email': user.email,
+    })
