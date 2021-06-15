@@ -69,11 +69,20 @@ class CustomAuthToken(ObtainAuthToken):
 @api_view(['GET'])
 def current_user(request):
     user = request.user
-    guardian = Guardian.objects.get(user= user)
-
-    return Response({
+    if user.is_staff:
+        return Response({
         'user_id': user.id,
-        'first_name': guardian.first_name,
-        'last_name': guardian.last_name,
+        'first_name': 'Staff First Name',
+        'last_name': 'Last Name',
         'email': user.email,
+        'is_staff': user.is_staff,
+        })
+    if not user.is_staff:
+        guardian = Guardian.objects.get(user= user)
+        return Response({
+            'user_id': user.id,
+            'first_name': guardian.first_name,
+            'last_name': guardian.last_name,
+            'email': user.email,
+            'is_staff': user.is_staff,
     })
