@@ -35,6 +35,7 @@ class SchoolDetailsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SchoolDetails.objects.all()
     serializer_class = SchoolDetailsSerializers
 
+# TODO make get list available only for staff
 class GuardiansLocationViewSet(viewsets.ModelViewSet):
     serializer_class = GuardianLocationSerializers
     queryset = GuardiansLocation.objects.all()
