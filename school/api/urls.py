@@ -9,9 +9,12 @@ router = DefaultRouter()
 router.register(r'guardian',views.GuardianViewSet)
 router.register(r'school_details',views.SchoolDetailsViewSet)
 router.register(r'create_guardians_location',views.GuardiansLocationViewSet)
+#router.register(r'updateParentsLocation', views.updateguardainLocation)
 
 
 urlpatterns = [
+    path("updateParentsLocation", views.updateguardainLocation, name="updategurdainLocation"),
     path('', include(router.urls)),
+
 
 ]
