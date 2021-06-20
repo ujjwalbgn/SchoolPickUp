@@ -4,8 +4,8 @@ from school.models import SchoolDetails
 
 
 def nearest_parents():
-    getallobject = GuardiansLocation.objects.all().order_by('source_of_location', '-timeStamp').distinct(
-        'source_of_location')
+    getallobject = GuardiansLocation.objects.all().order_by('user', '-timeStamp').distinct(
+        'user')
     getschooldetails = SchoolDetails.objects.first()
     nearbyparents = {}
     for obj in getallobject:

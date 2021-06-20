@@ -7,7 +7,6 @@ from rest_framework import status
 from school.api.serializers import *
 from school.api.logic import nearest_parents
 
-
 # TODO make it available only for staff
 class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
     #
@@ -41,7 +40,7 @@ def update_parents_location(request):
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
             'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
-            'source_of_location': request.user.id,
+            'user': request.user.id,
         }
         serializers = GuardianLocationSerializers(data=pdata)
         if serializers.is_valid():

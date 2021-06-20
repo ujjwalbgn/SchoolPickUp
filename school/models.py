@@ -89,20 +89,20 @@ class SchoolDetails(models.Model):
 
 
 class GuardiansLocation(models.Model):
-    source_of_location = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
     latitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     longitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     timeStamp = models.DateTimeField(null=False)
 
     def __str__(self):
-        display = (str(self.source_of_location.get_username()) + "  " + str(self.timeStamp))
+        display = (str(self.user.get_username()) + "  " + str(self.timeStamp))
         return display
 
 
 class NearestParents(models.Model):
-    parents = models.OneToOneField(SchoolUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(SchoolUser, on_delete=models.CASCADE, primary_key=True)
     distance = models.DecimalField(null=False, max_digits=15, decimal_places=5)
 
     def __str__(self):
-        display = (str(self.parents.get_username()) + "  Distance:  " + str(self.distance) + "m")
+        display = (str(self.user.get_username()) + "  Distance:  " + str(self.distance) + "m")
         return display

@@ -11,17 +11,17 @@ def clear_location():
 
 def update_parents_distance():
     get_school_details = SchoolDetails.objects.first()
-    get_all_objects = GuardiansLocation.objects.all().order_by('source_of_location', '-timeStamp').distinct(
-        'source_of_location')
+    get_all_objects = GuardiansLocation.objects.all().order_by('user', '-timeStamp').distinct(
+        'user')
     for obj in get_all_objects:
         p_distance = calcualtedistance.distance((obj.latitude, obj.longitude),
                                                (get_school_details.latitude, get_school_details.longitude)).m
-        if NearestParents.objects.filter(parents=obj.source_of_location).exists():
-            parents = NearestParents.objects.get(parents=obj.source_of_location)
+        if NearestParents.objects.filter(parents=obj.user).exists():
+            parents = NearestParents.objects.get(parents=obj.user)
             parents.distance = p_distance
             parents.save()
         else:
-            parents = NearestParents(parents=obj.source_of_location, distance=p_distance)
+            parents = NearestParents(parents=obj.user, distance=p_distance)
             parents.save()
 
 
