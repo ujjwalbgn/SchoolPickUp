@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'school.apps.SchoolConfig',
-
+    'apscheduler',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
