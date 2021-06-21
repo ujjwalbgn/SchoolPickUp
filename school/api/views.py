@@ -6,6 +6,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from school.api.serializers import *
 from school.api.logic import nearest_parents
+import geopy.distance as calcualtedistance
+from school.models import SchoolDetails
+
+
+# Create your views here.
+
+# @api_view(['GET'])
+# def api_root(request, format=None):
+# return Response({
+#     'guardian': reverse('guardian-list', request=request, format=format),
+# })
+
 
 # TODO make it available only for staff
 class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
@@ -25,8 +37,11 @@ class GuardiansLocationViewSet(viewsets.ModelViewSet):
     queryset = GuardiansLocation.objects.all()
 
 
+parentslocation = []
+
+
 @api_view(['POST'])
-def update_parents_location(request):
+def updateguardainLocation(request):
     if request.method == 'POST':
         print(request.data)
         data = {}
@@ -42,10 +57,50 @@ def update_parents_location(request):
             'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
             'user': request.user.id,
         }
+        # parentslocation.append(pdata)
+        print(pdata)
         serializers = GuardianLocationSerializers(data=pdata)
         if serializers.is_valid():
             serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATED)
+
+            return Response(parentslocation, status=status.HTTP_201_CREATED)
+
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# def UpdateUserLocation(APIView):
+#     def post(self, request):
+@api_view(['GET'])
+def getnearbyParents(request):
+    if request.method == 'GET':
+        return JsonResponse(parentsDistance)
+
+
+parentsDistance = {}
+
+
+#
+# @api_view(['POST'])
+# def updateGurdainDistance(request):
+#     getSchoolDetails = SchoolDetails.objects.first()
+#     pDistance = calcualtedistance.distance((request.data['latitude'], request.data['longitude']),
+#                                            (getSchoolDetails.latitude, getSchoolDetails.longitude)).m
+#     if request.user.id in parentsDistance:
+#         if pDistance < parentsDistance[request.user.id]:
+#             parentsDistance[request.user.id] = pDistance
+#     else:
+#         parentsDistance[request.user.id] = pDistance
+#     print(parentsDistance)
+#     return JsonResponse(parentsDistance)
+
+
+@api_view(['GET'])
+def clear_location(request):
+    GuardiansLocation.objects.all().delete()
+    print(GuardiansLocation.objects.all())
+    return JsonResponse({'cleared': 'cleared'})
+
+
+
 
 
