@@ -1,13 +1,13 @@
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
-from rest_framework import viewsets
-from datetime import datetime
+from rest_framework.views import APIView
+from rest_framework import viewsets, status, authentication, permissions, generics
 from rest_framework.response import Response
-from rest_framework import status
+from django.http import JsonResponse
+from datetime import datetime
 from school.api.serializers import *
-from school.api.logic import nearest_parents
-import geopy.distance as calcualtedistance
 from school.models import SchoolDetails
+from django.core import serializers
+from django.core.serializers.json import Serializer, DjangoJSONEncoder
 
 
 # Create your views here.
@@ -68,39 +68,40 @@ def updateguardainLocation(request):
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# def UpdateUserLocation(APIView):
-#     def post(self, request):
-@api_view(['GET'])
-def getnearbyParents(request):
-    if request.method == 'GET':
-        return JsonResponse(parentsDistance)
-
-
-parentsDistance = {}
-
-
-#
-# @api_view(['POST'])
-# def updateGurdainDistance(request):
-#     getSchoolDetails = SchoolDetails.objects.first()
-#     pDistance = calcualtedistance.distance((request.data['latitude'], request.data['longitude']),
-#                                            (getSchoolDetails.latitude, getSchoolDetails.longitude)).m
-#     if request.user.id in parentsDistance:
-#         if pDistance < parentsDistance[request.user.id]:
-#             parentsDistance[request.user.id] = pDistance
-#     else:
-#         parentsDistance[request.user.id] = pDistance
-#     print(parentsDistance)
-#     return JsonResponse(parentsDistance)
-
+# @api_view(['GET'])
+# def getnearbyParents(request):
+#     if request.method == 'GET':
+#         if request.user.is_staff:
+#             NearestParents.
 
 @api_view(['GET'])
 def clear_location(request):
     GuardiansLocation.objects.all().delete()
+    NearestParents.objects.all().delete()
     print(GuardiansLocation.objects.all())
     return JsonResponse({'cleared': 'cleared'})
 
 
+@api_view(['GET'])
+def get_nearest_parents(request):
+    near_parents = NearestParents.objects.all()[:10]
+    near_parents_response = {}
+    for obj in near_parents:
+        try:
+            get_parents_info = Guardian.objects.filter(user=obj.user)[0]
+            if get_parents_info:
+                parents_json = ParentsSerializer(get_parents_info).data
+                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
+                childrens = {}
+                if len(student_info):
+                    for stud_obj in student_info:
+                        student_data = StudentSerializer(stud_obj).data
+                        childrens[str(student_data['id'])] = student_data
+                parents_json["children"] = childrens
+                near_parents_response[str(parents_json["user"])] = parents_json
+                print(near_parents_response)
 
+        except Exception:
+            return Response(status=500)
 
-
+    return Response(near_parents_response)

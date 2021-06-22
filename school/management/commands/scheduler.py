@@ -31,3 +31,4 @@ class Command(BaseCommand):
         sched.add_job(update_parents_distance, 'interval', seconds=5)
         sched.add_job(clear_location, 'interval', hours=12)
         sched.start()
+

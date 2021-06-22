@@ -14,9 +14,9 @@ router.register(r'create_guardians_location', views.GuardiansLocationViewSet)
 
 urlpatterns = [
     path('updateguardainLocation', views.updateguardainLocation, name="updategurdainLocation"),
-    path('getnearbyParents', views.getnearbyParents, name="getnearbyparents"),
+    path('getnearbyParents', views.get_nearest_parents, name="getnearbyparents"),
 
-    path('clear_location',views.clear_location,name ='clearLocation'),
+    path('clear_location', views.clear_location, name='clearLocation'),
     path('', include(router.urls)),
 
 ]

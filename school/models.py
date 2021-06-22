@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import SchoolUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 # Create your models here.
@@ -17,11 +18,14 @@ class Student(models.Model):
                  ('TN', 'Tennessee'), ('TX', 'Texas'), ('UT', 'Utah'), ('VT', 'Vermont'), ('VA', 'Virginia'),
                  ('WA', 'Washington'), ('WV', 'West Virginia'), ('WI', 'Wisconsin'), ('WY', 'Wyoming')]
 
+    Grades = ((
+        (1, 'One'), (2, 'Two'), (3, 'Three'), (4, 'Four')
+    ))
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     date_of_birth = models.DateField(null=True, blank=True)
     student_id = models.CharField(max_length=10, blank=True)
-
+    grade = models.PositiveIntegerField(choices=Grades, default=1)
     address_1 = models.CharField(max_length=128, blank=True)
     address_2 = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=64, default="", blank=True)
