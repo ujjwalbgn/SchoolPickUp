@@ -84,21 +84,28 @@ def clear_location(request):
 
 @api_view(['GET'])
 def get_nearest_parents(request):
-    near_parents = NearestParents.objects.all()[:10]
+    near_parents = NearestParents.objects.order_by('distance')
     near_parents_response = {}
     for obj in near_parents:
         try:
             get_parents_info = Guardian.objects.filter(user=obj.user)[0]
             if get_parents_info:
                 parents_json = ParentsSerializer(get_parents_info).data
-                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
+                print(request.data)
+                if request.data['grade'] == '0':
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
+
+                else:
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,
+                                                          grade=int(request.data['grade']))
+
                 childrens = {}
                 if len(student_info):
                     for stud_obj in student_info:
                         student_data = StudentSerializer(stud_obj).data
                         childrens[str(student_data['id'])] = student_data
-                parents_json["children"] = childrens
-                near_parents_response[str(parents_json["user"])] = parents_json
+                    parents_json["children"] = childrens
+                    near_parents_response[str(parents_json["user"])] = parents_json
                 print(near_parents_response)
 
         except Exception:

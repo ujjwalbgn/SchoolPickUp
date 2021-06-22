@@ -30,7 +30,7 @@ class GuardianLocationSerializers(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'first_name', 'last_name']
+        fields = ['id', 'first_name', 'last_name', 'grade']
 
 
 class ParentsSerializer(serializers.ModelSerializer):
