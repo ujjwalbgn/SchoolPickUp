@@ -86,21 +86,14 @@ def clear_location(request):
 def get_nearest_parents(request):
     near_parents = NearestParents.objects.order_by('distance')
     near_parents_response = []
-    requested_grade = request.GET['grade']
     print('requested grade is ', request.GET['grade'])
     for obj in near_parents:
         try:
             get_parents_info = Guardian.objects.filter(user=obj.user)[0]
             if get_parents_info:
                 parents_json = ParentsSerializer(get_parents_info).data
-                print(request.data)
-                if int(requested_grade):
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,
-                                                          grade=int(requested_grade))
-                else:
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
-
-
+                # print(request.data)
+                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
                 childrens = []
                 if len(student_info):
                     for stud_obj in student_info:
