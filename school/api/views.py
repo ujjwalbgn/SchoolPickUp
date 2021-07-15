@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets, status, authentication, permissions, generics
 from rest_framework.response import Response
 from django.http import JsonResponse
-from datetime import datetime
+from datetime import datetime, timedelta
 from school.api.serializers import *
 from school.models import SchoolDetails
 from django.core import serializers
@@ -51,10 +51,12 @@ def updateguardainLocation(request):
             print(timeStamp)
         except Exception:
             print(Exception)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         pdata = {
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
-            'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
+            # 'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
+            'timeStamp': datetime.now(),
             'user': request.user.id,
         }
         # parentslocation.append(pdata)
@@ -86,14 +88,18 @@ def clear_location(request):
 def get_nearest_parents(request):
     near_parents = NearestParents.objects.order_by('distance')
     near_parents_response = []
-    print('requested grade is ', request.GET['grade'])
+
+    pickedStudent = PickedUpDroppedOff.objects.filter(
+        timestamp__range=((datetime.now() - timedelta(hours=6)), datetime.now())).values_list('students')
+
     for obj in near_parents:
         try:
             get_parents_info = Guardian.objects.filter(user=obj.user)[0]
             if get_parents_info:
                 parents_json = ParentsSerializer(get_parents_info).data
                 # print(request.data)
-                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info)
+                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in = pickedStudent)
+                # print(student_info)
                 childrens = []
                 if len(student_info):
                     for stud_obj in student_info:
@@ -101,9 +107,41 @@ def get_nearest_parents(request):
                         childrens.append(student_data)
                     parents_json["children"] = childrens
                     near_parents_response.append(parents_json)
-                print(near_parents_response)
-
+                # print(near_parents_response)
         except Exception:
             return Response(status=500)
 
     return Response(near_parents_response)
+
+
+@api_view(['POST'])
+def updatePickUpDropOff(request):
+    if request.method == 'POST':
+        print(request.data)
+        savesucess = True
+        children = request.data['ids']
+        if(len(children)==0):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        print(children)
+        for obj in children:
+            pdata = {
+                'parents': request.data['parent'],
+                'students': obj,
+                'timestamp': datetime.now(),
+            }
+            print(pdata)
+            serializers = PickedUpDroppedOffSerializer(data=pdata)
+            if serializers.is_valid():
+                serializers.save()
+
+            else:
+                print(serializers.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def clear_pickUpDropOff(request):
+    PickedUpDroppedOff.objects.all().delete()
+
+    return JsonResponse({'cleared': 'cleared'})

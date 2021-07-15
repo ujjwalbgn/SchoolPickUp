@@ -37,3 +37,9 @@ class ParentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guardian
         fields = ['user', 'first_name', 'last_name', 'phone_number']
+
+
+class PickedUpDroppedOffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PickedUpDroppedOff
+        fields = '__all__'
