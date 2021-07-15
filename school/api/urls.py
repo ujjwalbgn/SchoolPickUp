@@ -15,8 +15,10 @@ router.register(r'create_guardians_location', views.GuardiansLocationViewSet)
 urlpatterns = [
     path('updateguardainLocation', views.updateguardainLocation, name="updategurdainLocation"),
     path('getnearbyParents', views.get_nearest_parents, name="getnearbyparents"),
-
+    path('updatePickUpDropOff', views.updatePickUpDropOff, name="updatePickUpDropOff"),
     path('clear_location', views.clear_location, name='clearLocation'),
     path('', include(router.urls)),
+    path('clear_pickUpDropOff', views.clear_pickUpDropOff, name='clear_pickUpDropOff'),
+
 
 ]

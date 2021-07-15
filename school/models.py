@@ -110,3 +110,13 @@ class NearestParents(models.Model):
     def __str__(self):
         display = (str(self.user.get_username()) + "  Distance:  " + str(self.distance) + "m")
         return display
+
+
+class PickedUpDroppedOff(models.Model):
+    students = models.ForeignKey(Student, on_delete=models.CASCADE)
+    parents = models.ForeignKey(Guardian, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(null=False,)
+
+    def __str__(self):
+        display = ("Student: "+ str(self.students) + "_______ Parents: " + str(self.parents))
+        return display
