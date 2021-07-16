@@ -3,8 +3,37 @@ from school.models import *
 
 # Register your models here.
 
-admin.site.register(Student)
-admin.site.register(Guardian)
+
+class StudentGuardianInstanceInline(admin.TabularInline):
+    model = StudentAndGuardian
+    extra = 0
+
+
+class StudentAdmin(admin.ModelAdmin):
+    inlines = [
+        StudentGuardianInstanceInline,
+    ]
+
+    search_fields = [
+        'first_name',
+        'last_name'
+    ]
+
+
+class GuardianAdmin(admin.ModelAdmin):
+    inlines = [
+        StudentGuardianInstanceInline,
+    ]
+
+    search_fields = [
+        'first_name',
+        'last_name'
+    ]
+
+admin.site.register(Student,StudentAdmin)
+admin.site.register(Guardian,GuardianAdmin)
+
+
 admin.site.register(Relation)
 admin.site.register(StudentAndGuardian)
 admin.site.register(SchoolDetails)
