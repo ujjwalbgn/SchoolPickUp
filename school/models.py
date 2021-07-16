@@ -91,6 +91,10 @@ class SchoolDetails(models.Model):
     longitude = models.DecimalField(null=False, max_digits=25, decimal_places=10)
     geofencing_radius = models.DecimalField(null=False, max_digits=20, decimal_places=5, default=0)
 
+    def __str__(self):
+        display = (str(self.latitude) + "  " + str(self.longitude))
+        return display
+
 
 class GuardiansLocation(models.Model):
     user = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)

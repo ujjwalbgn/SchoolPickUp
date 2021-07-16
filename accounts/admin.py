@@ -61,7 +61,8 @@ class UserAdmin(BaseUserAdmin):
 
     # list_display = ('email', 'first_name','last_name','date_of_birth', 'is_admin')
 
-    list_display = ('email', 'is_admin')
+    list_display = ('email', 'is_admin','is_staff')
+
 
     list_filter = ('is_admin',)
     readonly_fields = ('created_at','updated_at','last_login')
