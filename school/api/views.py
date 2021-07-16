@@ -6,17 +6,11 @@ from django.http import JsonResponse
 from datetime import datetime, timedelta
 from school.api.serializers import *
 from school.models import SchoolDetails
+from django.utils import timezone
+
 from django.core import serializers
 from django.core.serializers.json import Serializer, DjangoJSONEncoder
 
-
-# Create your views here.
-
-# @api_view(['GET'])
-# def api_root(request, format=None):
-# return Response({
-#     'guardian': reverse('guardian-list', request=request, format=format),
-# })
 
 
 # TODO make it available only for staff
@@ -56,7 +50,7 @@ def updateguardainLocation(request):
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
             # 'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
-            'timeStamp': datetime.now(),
+            'timeStamp': timezone.now(),
             'user': request.user.id,
         }
         # parentslocation.append(pdata)
@@ -90,15 +84,18 @@ def get_nearest_parents(request):
     near_parents_response = []
 
     pickedStudent = PickedUpDroppedOff.objects.filter(
-        timestamp__range=((datetime.now() - timedelta(hours=6)), datetime.now())).values_list('students')
-
+        timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
+    requested_grade = request.GET['grade']
     for obj in near_parents:
         try:
             get_parents_info = Guardian.objects.filter(user=obj.user)[0]
             if get_parents_info:
                 parents_json = ParentsSerializer(get_parents_info).data
-                # print(request.data)
-                student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in = pickedStudent)
+                if requested_grade == "ALL":
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in = pickedStudent)
+                else:
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,grade=int(requested_grade)).exclude(
+                        id__in=pickedStudent)
                 # print(student_info)
                 childrens = []
                 if len(student_info):
@@ -143,5 +140,4 @@ def updatePickUpDropOff(request):
 @api_view(['GET'])
 def clear_pickUpDropOff(request):
     PickedUpDroppedOff.objects.all().delete()
-
     return JsonResponse({'cleared': 'cleared'})
