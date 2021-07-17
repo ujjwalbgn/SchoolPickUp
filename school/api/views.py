@@ -1,16 +1,12 @@
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework import viewsets, status, authentication, permissions, generics
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from school.api.serializers import *
 from school.models import SchoolDetails
 from django.utils import timezone
-
-from django.core import serializers
-from django.core.serializers.json import Serializer, DjangoJSONEncoder
-
+import geopy.distance as calculate_distance
 
 
 # TODO make it available only for staff
@@ -37,38 +33,27 @@ parentslocation = []
 @api_view(['POST'])
 def updateguardainLocation(request):
     if request.method == 'POST':
-        print(request.data)
-        data = {}
-        timeStamp = 0
-        try:
-            timeStamp = int(request.data['timeStamp'])
-            print(timeStamp)
-        except Exception:
-            print(Exception)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        getSchoolDetails = SchoolDetails.objects.first()
         pdata = {
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
             # 'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
             'timeStamp': timezone.now(),
             'user': request.user.id,
+            'distance': round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
+                                                          (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
         }
         # parentslocation.append(pdata)
         print(pdata)
         serializers = GuardianLocationSerializers(data=pdata)
+
         if serializers.is_valid():
             serializers.save()
-
             return Response(parentslocation, status=status.HTTP_201_CREATED)
+        else:
 
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# @api_view(['GET'])
-# def getnearbyParents(request):
-#     if request.method == 'GET':
-#         if request.user.is_staff:
-#             NearestParents.
 
 @api_view(['GET'])
 def clear_location(request):
@@ -80,10 +65,12 @@ def clear_location(request):
 
 @api_view(['GET'])
 def get_nearest_parents(request):
-    near_parents = NearestParents.objects.order_by('distance')
+    near_parents = GuardiansLocation.objects.all().filter(
+        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).order_by('user', '-timeStamp',
+                                                                                           'distance').distinct(
+        'user')
     near_parents_response = []
-
-    pickedStudent = PickedUpDroppedOff.objects.filter(
+    picked_student = PickedUpDroppedOff.objects.filter(
         timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
     requested_grade = request.GET['grade']
     for obj in near_parents:
@@ -91,42 +78,41 @@ def get_nearest_parents(request):
             get_parents_info = Guardian.objects.filter(user=obj.user)[0]
             if get_parents_info:
                 parents_json = ParentsSerializer(get_parents_info).data
+                parents_json["distance"] = obj.distance
                 if requested_grade == "ALL":
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in = pickedStudent)
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(
+                        id__in=picked_student)
                 else:
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,grade=int(requested_grade)).exclude(
-                        id__in=pickedStudent)
-                # print(student_info)
-                childrens = []
+                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,
+                                                          grade=int(requested_grade)).exclude(
+                        id__in=picked_student)
+                children = []
                 if len(student_info):
                     for stud_obj in student_info:
                         student_data = StudentSerializer(stud_obj).data
-                        childrens.append(student_data)
-                    parents_json["children"] = childrens
+                        children.append(student_data)
+                    parents_json["children"] = children
                     near_parents_response.append(parents_json)
                 # print(near_parents_response)
         except Exception:
             return Response(status=500)
-
+    if near_parents_response:
+        near_parents_response = sorted(near_parents_response, key=lambda obj: obj['distance'])
     return Response(near_parents_response)
 
 
 @api_view(['POST'])
-def updatePickUpDropOff(request):
+def update_pickup_drop_off(request):
     if request.method == 'POST':
-        print(request.data)
-        savesucess = True
         children = request.data['ids']
-        if(len(children)==0):
+        if len(children) == 0:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        print(children)
         for obj in children:
             pdata = {
                 'parents': request.data['parent'],
                 'students': obj,
                 'timestamp': datetime.now(),
             }
-            print(pdata)
             serializers = PickedUpDroppedOffSerializer(data=pdata)
             if serializers.is_valid():
                 serializers.save()
@@ -136,6 +122,7 @@ def updatePickUpDropOff(request):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_201_CREATED)
+
 
 @api_view(['GET'])
 def clear_pickUpDropOff(request):

@@ -101,9 +101,10 @@ class GuardiansLocation(models.Model):
     latitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     longitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     timeStamp = models.DateTimeField(null=False)
+    distance = models.DecimalField(null=False,max_digits=15, decimal_places=5)
 
     def __str__(self):
-        display = (str(self.user.get_username()) + "  " + str(self.timeStamp))
+        display = (str(self.user.get_username()) + "  " + str(self.timeStamp) + "\tDistance:  " + str(self.distance) + "m")
         return display
 
 
