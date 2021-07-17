@@ -1,7 +1,8 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 from school.models import GuardiansLocation, SchoolDetails, NearestParents
 from django.core.management.base import BaseCommand, CommandError
-
+from django.utils import timezone
+from datetime import datetime, timedelta
 import geopy.distance as calcualtedistance
 
 
@@ -12,7 +13,7 @@ def clear_location():
 def update_parents_distance():
     getSchoolDetails = SchoolDetails.objects.first()
     getallobject = GuardiansLocation.objects.all().order_by('user', '-timeStamp').distinct(
-        'user')
+        'user').filter((timezone.now() - timedelta(hours=6)), timezone.now())
     for obj in getallobject:
         pdistance = calcualtedistance.distance((obj.latitude, obj.longitude),
                                                (getSchoolDetails.latitude, getSchoolDetails.longitude)).m
