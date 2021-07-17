@@ -13,7 +13,8 @@ def clear_location():
 def update_parents_distance():
     getSchoolDetails = SchoolDetails.objects.first()
     getallobject = GuardiansLocation.objects.all().order_by('user', '-timeStamp').distinct(
-        'user').filter((timezone.now() - timedelta(hours=6)), timezone.now())
+        'user').filter( timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now()))
+    print(getallobject)
     for obj in getallobject:
         pdistance = calcualtedistance.distance((obj.latitude, obj.longitude),
                                                (getSchoolDetails.latitude, getSchoolDetails.longitude)).m
