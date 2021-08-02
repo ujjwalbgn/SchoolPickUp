@@ -33,6 +33,8 @@ parentslocation = []
 @api_view(['POST'])
 def updateguardainLocation(request):
     if request.method == 'POST':
+        if check_if_student_picked_dropped(request):
+           return JsonResponse({'picked': 'true'})
         getSchoolDetails = SchoolDetails.objects.first()
         pdata = {
             'latitude': request.data['latitude'],
@@ -44,12 +46,12 @@ def updateguardainLocation(request):
                                                           (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
         }
         # parentslocation.append(pdata)
-        print(pdata)
+
         serializers = GuardianLocationSerializers(data=pdata)
 
         if serializers.is_valid():
             serializers.save()
-            return Response(parentslocation, status=status.HTTP_201_CREATED)
+            return Response({'picked': 'false'}, status=status.HTTP_201_CREATED)
         else:
 
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -128,3 +130,14 @@ def update_pickup_drop_off(request):
 def clear_pickUpDropOff(request):
     PickedUpDroppedOff.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
+
+
+def check_if_student_picked_dropped(request):
+    picked_student = PickedUpDroppedOff.objects.filter(
+        timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
+    get_parents_info = Guardian.objects.filter(user=request.user.id)[0]
+    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in=picked_student)
+    if len(student_info):
+        return False
+    else:
+        return True
