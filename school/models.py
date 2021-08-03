@@ -120,8 +120,24 @@ class NearestParents(models.Model):
 class PickedUpDroppedOff(models.Model):
     students = models.ForeignKey(Student, on_delete=models.CASCADE)
     parents = models.ForeignKey(Guardian, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(null=False,)
+    timestamp = models.DateTimeField(null=False, )
 
     def __str__(self):
-        display = ("Student: "+ str(self.students) + "_______ Parents: " + str(self.parents))
+        display = ("Student: " + str(self.students) + "_______ Parents: " + str(self.parents))
+        return display
+
+
+class PickupSpot(models.Model):
+    pickup_spot = models.CharField(max_length=128, blank=False)
+    notes = models.CharField(max_length=500, blank=True)
+
+    def __str__(self):
+        return self.pickup_spot
+
+class GuardianPickupSpot(models.Model):
+    guardian = models.OneToOneField(Guardian, on_delete=models.CASCADE)
+    pickup_spot = models.OneToOneField(PickupSpot, on_delete=models.CASCADE)
+
+    def __str__(self):
+        display = ("guardian: " + str(self.guardian) + " Parents: " + str(self.guardian))
         return display

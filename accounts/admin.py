@@ -59,7 +59,6 @@ class UserAdmin(BaseUserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
 
-    # list_display = ('email', 'first_name','last_name','date_of_birth', 'is_admin')
 
     list_display = ('email', 'is_admin','is_staff')
 
@@ -69,7 +68,6 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
 
-        # ('Personal info', {'fields': ('first_name','last_name','date_of_birth',)}),
 
         ('Permissions', {'fields': ('is_admin','is_active','is_staff')}),
         ('Important Dates', {'fields': ('last_login','created_at','updated_at')}),
@@ -80,9 +78,8 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            # 'fields': ('email', 'first_name', 'last_name', 'date_of_birth', 'password1', 'password2'),
 
-            'fields': ('email', 'password1', 'password2'), #  <--- with out Name and DOB
+            'fields': ('email', 'password1', 'password2'),
         }),
     )
     search_fields = ('email',)
