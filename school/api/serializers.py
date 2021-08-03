@@ -43,3 +43,13 @@ class PickedUpDroppedOffSerializer(serializers.ModelSerializer):
     class Meta:
         model = PickedUpDroppedOff
         fields = '__all__'
+
+class PickupSpotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PickupSpot
+        fields = '__all__'
+
+class GuardianPickupSpotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuardianPickupSpot
+        fields = '__all__'

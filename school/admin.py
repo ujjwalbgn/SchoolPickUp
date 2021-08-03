@@ -33,6 +33,9 @@ class GuardianAdmin(admin.ModelAdmin):
 admin.site.register(Student,StudentAdmin)
 admin.site.register(Guardian,GuardianAdmin)
 
+admin.site.register(PickupSpot)
+admin.site.register(GuardianPickupSpot)
+
 
 admin.site.register(Relation)
 admin.site.register(StudentAndGuardian)
