@@ -21,12 +21,6 @@ class SchoolDetailsSerializers(serializers.ModelSerializer):
         fields = ['latitude', 'longitude', 'geofencing_radius']
 
 
-class GuardianLocationSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = GuardiansLocation
-        fields = '__all__'
-
-
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
@@ -37,6 +31,12 @@ class ParentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guardian
         fields = ['user', 'first_name', 'last_name', 'phone_number']
+
+
+class GuardianLocationSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = GuardiansLocation
+        fields = '__all__'
 
 
 class PickedUpDroppedOffSerializer(serializers.ModelSerializer):

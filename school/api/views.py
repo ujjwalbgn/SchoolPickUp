@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework.decorators import api_view
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -34,14 +35,18 @@ parentslocation = []
 def updateguardainLocation(request):
     if request.method == 'POST':
         if check_if_student_picked_dropped(request):
-           return JsonResponse({'picked': 'true'})
+            return JsonResponse({'picked': 'true'})
         getSchoolDetails = SchoolDetails.objects.first()
+        print(request.data)
+        print(request.user.id)
+        obj = Guardian.objects.filter(user=request.user.id)[0]
+        print(obj.id)
         pdata = {
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
             # 'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
             'timeStamp': timezone.now(),
-            'user': request.user.id,
+            'guardian': obj.id,
             'distance': round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
                                                           (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
         }
@@ -53,14 +58,14 @@ def updateguardainLocation(request):
             serializers.save()
             return Response({'picked': 'false'}, status=status.HTTP_201_CREATED)
         else:
-
+            print(serializers.errors)
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
 def clear_location(request):
     GuardiansLocation.objects.all().delete()
-    NearestParents.objects.all().delete()
+
     print(GuardiansLocation.objects.all())
     return JsonResponse({'cleared': 'cleared'})
 
@@ -68,35 +73,36 @@ def clear_location(request):
 @api_view(['GET'])
 def get_nearest_parents(request):
     near_parents = GuardiansLocation.objects.all().filter(
-        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).order_by('user', '-timeStamp',
+        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).order_by('guardian', '-timeStamp',
                                                                                            'distance').distinct(
-        'user')
+        'guardian')
     near_parents_response = []
     picked_student = PickedUpDroppedOff.objects.filter(
         timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
     requested_grade = request.GET['grade']
+    print(near_parents)
     for obj in near_parents:
         try:
-            get_parents_info = Guardian.objects.filter(user=obj.user)[0]
-            if get_parents_info:
-                parents_json = ParentsSerializer(get_parents_info).data
-                parents_json["distance"] = obj.distance
-                if requested_grade == "ALL":
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(
-                        id__in=picked_student)
-                else:
-                    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info,
-                                                          grade=int(requested_grade)).exclude(
-                        id__in=picked_student)
-                children = []
-                if len(student_info):
-                    for stud_obj in student_info:
-                        student_data = StudentSerializer(stud_obj).data
-                        children.append(student_data)
-                    parents_json["children"] = children
-                    near_parents_response.append(parents_json)
-                # print(near_parents_response)
+            parents_json = GuardianLocationSerializers(obj).data
+            print(parents_json)
+            if requested_grade == "ALL":
+                student_info = Student.objects.filter(studentandguardian__Guardian=obj.guardian).exclude(
+                    id__in=picked_student)
+
+            else:
+                student_info = Student.objects.filter(studentandguardian__Guardian=obj.guardian,
+                                                      grade=int(requested_grade)).exclude(
+                    id__in=picked_student)
+            children = []
+            if len(student_info):
+                for stud_obj in student_info:
+                    student_data = StudentSerializer(stud_obj).data
+                    children.append(student_data)
+                parents_json["children"] = children
+                near_parents_response.append(parents_json)
+            # print(near_parents_response)
         except Exception:
+            print(Exception)
             return Response(status=500)
     if near_parents_response:
         near_parents_response = sorted(near_parents_response, key=lambda obj: obj['distance'])
@@ -141,3 +147,5 @@ def check_if_student_picked_dropped(request):
         return False
     else:
         return True
+
+

@@ -46,7 +46,6 @@ class Relation(models.Model):
 
 class Guardian(models.Model):
     user = models.OneToOneField(SchoolUser, on_delete=models.CASCADE, blank=True, null=True)
-
     first_name = models.CharField(max_length=64, default="")
     last_name = models.CharField(max_length=64, default="")
     date_of_birth = models.DateField(null=True, blank=True)
@@ -97,23 +96,15 @@ class SchoolDetails(models.Model):
 
 
 class GuardiansLocation(models.Model):
-    user = models.ForeignKey(SchoolUser, on_delete=models.PROTECT)
+    guardian = models.ForeignKey(Guardian, on_delete=models.PROTECT)
     latitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     longitude = models.DecimalField(null=False, max_digits=25, decimal_places=20)
     timeStamp = models.DateTimeField(null=False)
-    distance = models.DecimalField(null=False,max_digits=15, decimal_places=5)
-
-    def __str__(self):
-        display = (str(self.user.get_username()) + "  " + str(self.timeStamp) + "\tDistance:  " + str(self.distance) + "m")
-        return display
-
-
-class NearestParents(models.Model):
-    user = models.OneToOneField(SchoolUser, on_delete=models.CASCADE, primary_key=True)
     distance = models.DecimalField(null=False, max_digits=15, decimal_places=5)
 
     def __str__(self):
-        display = (str(self.user.get_username()) + "  Distance:  " + str(self.distance) + "m")
+        display = (str(self.guardian.first_name) + "  " + str(self.timeStamp) + "\tDistance:  " + str(
+            self.distance) + "m")
         return display
 
 
@@ -134,10 +125,11 @@ class PickupSpot(models.Model):
     def __str__(self):
         return self.pickup_spot
 
+
 class GuardianPickupSpot(models.Model):
     guardian = models.OneToOneField(Guardian, on_delete=models.CASCADE)
-    pickup_spot = models.OneToOneField(PickupSpot, on_delete=models.CASCADE)
+    pickup_spot = models.ForeignKey(PickupSpot, on_delete=models.CASCADE)
 
     def __str__(self):
-        display = ("guardian: " + str(self.guardian) + " Parents: " + str(self.guardian))
+        display = ("Guardian: " + str(self.guardian) + " SpotNo: " + str(self.pickup_spot))
         return display
