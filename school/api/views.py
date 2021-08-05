@@ -77,10 +77,15 @@ def updateguardainLocation(request):
 
 
 @api_view(['GET'])
+def get_all_Spot(request):
+    queryset = PickupSpot.objects.all()
+    serializers = PickupSpotSerializer(queryset,many=True)
+    return Response(serializers.data,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
 def clear_location(request):
     GuardiansLocation.objects.all().delete()
-
-    print(GuardiansLocation.objects.all())
+    GuardianPickupSpot.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
 
 

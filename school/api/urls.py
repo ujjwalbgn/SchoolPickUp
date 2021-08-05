@@ -20,4 +20,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('clear_pickUpDropOff', views.clear_pickUpDropOff, name='clear_pickUpDropOff'),
     path('getupdatepickupspot',views.get_update_pickup_spot,name='get_update_pickup_spot'),
+    path('getallspot', views.get_all_Spot,name= 'getallspot'),
 ]
