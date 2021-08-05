@@ -175,7 +175,21 @@ def get_update_pickup_spot(request):
         return Response(response, status=status.HTTP_200_OK)
     elif request.method == 'POST':
         print(request.data)
-        getguardainspot = GuardianPickupSpot.objects.get(id=request.data['id'])
-        getguardainspot.pickup_spot = PickupSpot.objects.get(id=request.data['newSpotId'])
-        getguardainspot.save()
+        getguardianspot = GuardianPickupSpot.objects.get(id=request.data['id'])
+        getguardianspot.pickup_spot = PickupSpot.objects.get(id=request.data['newSpotId'])
+        getguardianspot.save()
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_user_information(request):
+    if request.user.is_staff:
+        response = {
+            "first_name": "Iron",
+            "last_name": "Man",
+            "phone_number": ""
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    else:
+        guardian = Guardian.objects.filter(user_id=request.user.id)[0]
+        return Response(GuardianSerializers(guardian).data, status=status.HTTP_200_OK)

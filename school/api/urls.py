@@ -19,6 +19,7 @@ urlpatterns = [
     path('clear_location', views.clear_location, name='clearLocation'),
     path('', include(router.urls)),
     path('clear_pickUpDropOff', views.clear_pickUpDropOff, name='clear_pickUpDropOff'),
-    path('getupdatepickupspot',views.get_update_pickup_spot,name='get_update_pickup_spot'),
-    path('getallspot', views.get_all_Spot,name= 'getallspot'),
+    path('getupdatepickupspot', views.get_update_pickup_spot, name='get_update_pickup_spot'),
+    path('getallspot', views.get_all_Spot, name='getallspot'),
+    path('getuserInformation', views.get_user_information, name='get_user_information'),
 ]
