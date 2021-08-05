@@ -10,6 +10,19 @@ from django.utils import timezone
 import geopy.distance as calculate_distance
 
 
+# helper Function
+
+def check_if_student_picked_dropped(request):
+    picked_student = PickedUpDroppedOff.objects.filter(
+        timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
+    get_parents_info = Guardian.objects.filter(user=request.user.id)[0]
+    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in=picked_student)
+    if len(student_info):
+        return False
+    else:
+        return True
+
+
 # TODO make it available only for staff
 class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
     #
@@ -80,27 +93,30 @@ def get_nearest_parents(request):
     picked_student = PickedUpDroppedOff.objects.filter(
         timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
     requested_grade = request.GET['grade']
-    print(near_parents)
     for obj in near_parents:
         try:
-            parents_json = GuardianLocationSerializers(obj).data
-            print(parents_json)
             if requested_grade == "ALL":
                 student_info = Student.objects.filter(studentandguardian__Guardian=obj.guardian).exclude(
                     id__in=picked_student)
-
             else:
                 student_info = Student.objects.filter(studentandguardian__Guardian=obj.guardian,
                                                       grade=int(requested_grade)).exclude(
                     id__in=picked_student)
             children = []
             if len(student_info):
+
+                parents_json = GuardianSerializers(obj.guardian).data
+                parents_json["distance"] = obj.distance
                 for stud_obj in student_info:
                     student_data = StudentSerializer(stud_obj).data
                     children.append(student_data)
                 parents_json["children"] = children
                 near_parents_response.append(parents_json)
-            # print(near_parents_response)
+                if GuardianPickupSpot.objects.filter(guardian=obj.guardian).exists():
+                    parents_json["spot"] = GuardianPickupSpotSerializer(
+                        GuardianPickupSpot.objects.filter(guardian=obj.guardian)[0]).data
+                else:
+                    parents_json["spot"] = {}
         except Exception:
             print(Exception)
             return Response(status=500)
@@ -137,15 +153,6 @@ def clear_pickUpDropOff(request):
     PickedUpDroppedOff.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
 
-
-def check_if_student_picked_dropped(request):
-    picked_student = PickedUpDroppedOff.objects.filter(
-        timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
-    get_parents_info = Guardian.objects.filter(user=request.user.id)[0]
-    student_info = Student.objects.filter(studentandguardian__Guardian=get_parents_info).exclude(id__in=picked_student)
-    if len(student_info):
-        return False
-    else:
-        return True
-
-
+# @api_view('POST')
+# def change_assign_spot(request):
+#     return Response(status=status.HTTP_200_OK)

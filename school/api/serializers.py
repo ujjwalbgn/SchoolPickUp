@@ -6,14 +6,18 @@ from school.models import *
 from accounts.models import SchoolUser
 
 
-class GuardianSerializers(serializers.HyperlinkedModelSerializer):
-    user_email = serializers.ReadOnlyField(source='user.email')
-    url = serializers.HyperlinkedIdentityField(view_name="school_api:guardian-detail")
+# class GuardianSerializers(serializers.HyperlinkedModelSerializer):
+#     user_email = serializers.ReadOnlyField(source='user.email')
+#     url = serializers.HyperlinkedIdentityField(view_name="school_api:guardian-detail")
+#
+#     class Meta:
+#         model = Guardian
+#         fields = ['url', 'user_email', 'first_name', 'last_name', 'phone_number']
 
+class GuardianSerializers(serializers.ModelSerializer):
     class Meta:
         model = Guardian
-        fields = ['url', 'user_email', 'first_name', 'last_name', 'phone_number']
-
+        fields = ['id','first_name', 'last_name', 'phone_number']
 
 class SchoolDetailsSerializers(serializers.ModelSerializer):
     class Meta:
@@ -52,4 +56,5 @@ class PickupSpotSerializer(serializers.ModelSerializer):
 class GuardianPickupSpotSerializer(serializers.ModelSerializer):
     class Meta:
         model = GuardianPickupSpot
-        fields = '__all__'
+        fields = ['id', 'pickup_spot']
+        depth = 1
