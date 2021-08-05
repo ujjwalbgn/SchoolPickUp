@@ -79,8 +79,9 @@ def updateguardainLocation(request):
 @api_view(['GET'])
 def get_all_Spot(request):
     queryset = PickupSpot.objects.all()
-    serializers = PickupSpotSerializer(queryset,many=True)
-    return Response(serializers.data,status=status.HTTP_200_OK)
+    serializers = PickupSpotSerializer(queryset, many=True)
+    return Response(serializers.data, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def clear_location(request):
@@ -166,10 +167,15 @@ def clear_pickUpDropOff(request):
     PickedUpDroppedOff.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
 
-@api_view(['GET','POST'])
+
+@api_view(['GET', 'POST'])
 def get_update_pickup_spot(request):
     if request.method == 'GET':
         response = {'spot': get_locationSpot(request.user.id)}
-        return Response(response,status=status.HTTP_200_OK)
+        return Response(response, status=status.HTTP_200_OK)
     elif request.method == 'POST':
+        print(request.data)
+        getguardainspot = GuardianPickupSpot.objects.get(id=request.data['id'])
+        getguardainspot.pickup_spot = PickupSpot.objects.get(id=request.data['newSpotId'])
+        getguardainspot.save()
         return Response(status=status.HTTP_200_OK)
