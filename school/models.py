@@ -108,14 +108,6 @@ class GuardiansLocation(models.Model):
         return display
 
 
-class PickedUpDroppedOff(models.Model):
-    students = models.ForeignKey(Student, on_delete=models.CASCADE)
-    parents = models.ForeignKey(Guardian, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(null=False, )
-
-    def __str__(self):
-        display = ("Student: " + str(self.students) + "_______ Parents: " + str(self.parents))
-        return display
 
 
 class PickupSpot(models.Model):
@@ -132,4 +124,14 @@ class GuardianPickupSpot(models.Model):
 
     def __str__(self):
         display = ("Guardian: " + str(self.guardian) + " SpotNo: " + str(self.pickup_spot))
+        return display
+
+class PickedUpDroppedOff(models.Model):
+    students = models.ForeignKey(Student, on_delete=models.CASCADE)
+    parents = models.ForeignKey(Guardian, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(null=False, )
+    # spot = models.ForeignKey(PickupSpot,on_delete=models.CASCADE())
+
+    def __str__(self):
+        display = ("Student: " + str(self.students) + "_______ Parents: " + str(self.parents))
         return display

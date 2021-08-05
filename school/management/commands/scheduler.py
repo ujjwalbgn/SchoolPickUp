@@ -14,17 +14,18 @@ def clear_all():
 
 def assign_spot():
     near_parents = GuardiansLocation.objects.all().filter(
-        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).order_by('guardian', '-timeStamp',
-                                                                                           'distance').distinct(
+        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now()), distance__lte=250
+    ).order_by('guardian', '-timeStamp',
+               'distance').distinct(
         'guardian')
     picked_student = PickedUpDroppedOff.objects.filter(
         timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
     for obj in near_parents:
         student_info = Student.objects.filter(studentandguardian__Guardian=obj.guardian).exclude(
-                    id__in=picked_student)
+            id__in=picked_student)
         if len(student_info):
             if GuardianPickupSpot.objects.filter(guardian=obj.guardian).exists():
-                    print("Exist")
+                print("Exist")
             else:
                 spots = PickupSpot.objects.annotate(numbers_of_spot_occupied=Count('guardianpickupspot')).order_by(
                     'numbers_of_spot_occupied')[0]
