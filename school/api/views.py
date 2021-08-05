@@ -23,6 +23,15 @@ def check_if_student_picked_dropped(request):
         return True
 
 
+def get_locationSpot(id):
+    get_guard = Guardian.objects.filter(user=id)[0]
+    if GuardianPickupSpot.objects.filter(guardian=get_guard).exists():
+        return GuardianPickupSpotSerializer(
+            GuardianPickupSpot.objects.filter(guardian=get_guard)[0]).data
+    else:
+        return {}
+
+
 # TODO make it available only for staff
 class GuardianViewSet(viewsets.ReadOnlyModelViewSet):
     #
@@ -41,35 +50,27 @@ class GuardiansLocationViewSet(viewsets.ModelViewSet):
     queryset = GuardiansLocation.objects.all()
 
 
-parentslocation = []
-
-
 @api_view(['POST'])
 def updateguardainLocation(request):
     if request.method == 'POST':
         if check_if_student_picked_dropped(request):
             return JsonResponse({'picked': 'true'})
         getSchoolDetails = SchoolDetails.objects.first()
-        print(request.data)
-        print(request.user.id)
         obj = Guardian.objects.filter(user=request.user.id)[0]
-        print(obj.id)
         pdata = {
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
-            # 'timeStamp': datetime.fromtimestamp(int(request.data['timeStamp']) / 1000),
             'timeStamp': timezone.now(),
             'guardian': obj.id,
             'distance': round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
                                                           (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
         }
         # parentslocation.append(pdata)
-
         serializers = GuardianLocationSerializers(data=pdata)
-
         if serializers.is_valid():
             serializers.save()
-            return Response({'picked': 'false'}, status=status.HTTP_201_CREATED)
+            response = {'picked': 'false'}
+            return Response(response, status=status.HTTP_201_CREATED)
         else:
             print(serializers.errors)
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -140,10 +141,17 @@ def update_pickup_drop_off(request):
             serializers = PickedUpDroppedOffSerializer(data=pdata)
             if serializers.is_valid():
                 serializers.save()
-
             else:
                 print(serializers.errors)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        picked_student = PickedUpDroppedOff.objects.filter(
+            timestamp__range=((timezone.now() - timedelta(hours=6)), timezone.now())).values_list('students')
+        student_info = Student.objects.filter(studentandguardian__Guardian=request.data['parent']).exclude(
+            id__in=picked_student)
+        if len(student_info) == 0:
+            GuardianPickupSpot.objects.filter(id=request.data['spot']).delete()
+            # print(request.data)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -153,6 +161,10 @@ def clear_pickUpDropOff(request):
     PickedUpDroppedOff.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
 
-# @api_view('POST')
-# def change_assign_spot(request):
-#     return Response(status=status.HTTP_200_OK)
+@api_view(['GET','POST'])
+def get_update_pickup_spot(request):
+    if request.method == 'GET':
+        response = {'spot': get_locationSpot(request.user.id)}
+        return Response(response,status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        return Response(status=status.HTTP_200_OK)
