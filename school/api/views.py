@@ -192,4 +192,7 @@ def get_user_information(request):
         return Response(response, status=status.HTTP_200_OK)
     else:
         guardian = Guardian.objects.filter(user_id=request.user.id)[0]
-        return Response(GuardianSerializers(guardian).data, status=status.HTTP_200_OK)
+        serializers = GuardianSerializers(guardian).data
+        serializers['user_email'] = request.user.email
+        return Response(serializers,
+                        status=status.HTTP_200_OK)

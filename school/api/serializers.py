@@ -17,7 +17,8 @@ from accounts.models import SchoolUser
 class GuardianSerializers(serializers.ModelSerializer):
     class Meta:
         model = Guardian
-        fields = ['id','first_name', 'last_name', 'phone_number']
+        fields = ['user','id','first_name', 'last_name', 'phone_number']
+
 
 class SchoolDetailsSerializers(serializers.ModelSerializer):
     class Meta:
