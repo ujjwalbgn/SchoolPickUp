@@ -54,22 +54,22 @@ class GuardiansLocationViewSet(viewsets.ModelViewSet):
 def updateguardainLocation(request):
     if request.method == 'POST':
         if check_if_student_picked_dropped(request):
-            return JsonResponse({'picked': 'true'})
+            return JsonResponse({'picked': 'true', 'distance': 10000})
         getSchoolDetails = SchoolDetails.objects.first()
         obj = Guardian.objects.filter(user=request.user.id)[0]
+        distance = round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
+                                                     (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
         pdata = {
             'latitude': request.data['latitude'],
             'longitude': request.data['longitude'],
             'timeStamp': timezone.now(),
             'guardian': obj.id,
-            'distance': round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
-                                                          (getSchoolDetails.latitude, getSchoolDetails.longitude)).m, 5)
+            'distance': distance,
         }
-        # parentslocation.append(pdata)
         serializers = GuardianLocationSerializers(data=pdata)
         if serializers.is_valid():
             serializers.save()
-            response = {'picked': 'false'}
+            response = {'picked': 'false', 'distance': distance}
             return Response(response, status=status.HTTP_201_CREATED)
         else:
             print(serializers.errors)
@@ -185,8 +185,8 @@ def get_update_pickup_spot(request):
 def get_user_information(request):
     if request.user.is_staff:
         response = {
-            "first_name": "Iron",
-            "last_name": "Man",
+            "first_name": "Staff",
+            "last_name": "Staff",
             "phone_number": ""
         }
         return Response(response, status=status.HTTP_200_OK)
