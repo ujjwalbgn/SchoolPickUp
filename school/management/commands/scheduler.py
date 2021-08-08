@@ -14,7 +14,7 @@ def clear_all():
 
 def assign_spot():
     near_parents = GuardiansLocation.objects.all().filter(
-        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now()), distance__lte=250
+        timeStamp__range=((timezone.now() - timedelta(hours=6)), timezone.now()), distance__lte=500
     ).order_by('guardian', '-timeStamp',
                'distance').distinct(
         'guardian')
