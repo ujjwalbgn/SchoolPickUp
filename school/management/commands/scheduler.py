@@ -25,7 +25,7 @@ def assign_spot():
             id__in=picked_student)
         if len(student_info):
             if GuardianPickupSpot.objects.filter(guardian=obj.guardian).exists():
-                print("Exist")
+                continue
             else:
                 spots = PickupSpot.objects.annotate(numbers_of_spot_occupied=Count('guardianpickupspot')).order_by(
                     'numbers_of_spot_occupied')[0]
