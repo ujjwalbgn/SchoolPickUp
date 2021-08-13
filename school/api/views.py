@@ -87,6 +87,7 @@ def get_all_Spot(request):
 def clear_location(request):
     GuardiansLocation.objects.all().delete()
     GuardianPickupSpot.objects.all().delete()
+    PickedUpDroppedOff.objects.all().delete()
     return JsonResponse({'cleared': 'cleared'})
 
 
