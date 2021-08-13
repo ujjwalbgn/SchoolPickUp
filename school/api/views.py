@@ -54,7 +54,7 @@ class GuardiansLocationViewSet(viewsets.ModelViewSet):
 def updateguardainLocation(request):
     if request.method == 'POST':
         if check_if_student_picked_dropped(request):
-            return JsonResponse({'picked': 'true', 'distance': 10000})
+            return JsonResponse({'picked': 'true', 'distance': 0})
         getSchoolDetails = SchoolDetails.objects.first()
         obj = Guardian.objects.filter(user=request.user.id)[0]
         distance = round(calculate_distance.distance((request.data['latitude'], request.data['longitude']),
